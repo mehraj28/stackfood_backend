@@ -4,19 +4,26 @@ from jose import jwt
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-load_dotenv()  # ✅ load .env
+load_dotenv()  # load .env
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# ✅ USE ARGON2 (Python 3.13 compatible)
+pwd_context = CryptContext(
+    schemes=["argon2"],
+    deprecated="auto"
+)
 
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", 60))
 
+
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def create_access_token(data: dict):
     to_encode = data.copy()
